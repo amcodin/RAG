@@ -1,0 +1,64 @@
+# Cline Rules for Internet Plan Price Retrieval Project
+
+## Project Patterns
+1. All documentation uses Markdown format with clear hierarchical structure
+2. Mermaid diagrams are used for visualizing:
+   - System architecture
+   - Process flows
+   - Development timelines
+
+## File Organization
+- memory-bank/
+  - Core documentation files
+  - .clinerules (this file)
+  - Additional context files as needed
+
+## Documentation Standards
+1. Use emoji indicators for status:
+   - ✅ Complete
+   - 🔄 In Progress
+   - ⏳ Pending
+   - ❌ Blocked
+   - 🟡 Initial Phase
+   - 🟢 Active Development
+   - 🔴 Critical Issues
+
+2. Consistent section headers:
+   - Use H1 (#) for file titles
+   - Use H2 (##) for main sections
+   - Use H3 (###) for subsections
+
+## Implementation Guidelines
+1. Prefer using replace_in_file for small changes
+2. Use write_to_file for new files or major rewrites
+3. Keep documentation updated with each significant change
+4. Monitor timeline in progress.md for project status
+
+## Tool Usage
+1. Web scraping tool selection pending:
+   - BeautifulSoup4 vs Selenium decision needed
+   - JavaScript rendering requirements to be assessed
+
+2. AutoGen configuration:
+   - Version 0.4 required
+   - Cost tracking essential
+   - Round-robin task distribution
+
+## Update Patterns
+1. Regular documentation updates:
+   - After major implementations
+   - When new patterns emerge
+   - During architecture changes
+   - Upon milestone completion
+
+2. Progress tracking:
+   - Update status emojis
+   - Maintain timeline accuracy
+   - Track metrics when available
+
+## Best Practices
+1. Always verify AutoGen version compatibility
+2. Monitor computational costs
+3. Document all agent interactions
+4. Keep error handling consistent
+5. Maintain clear status indicators
