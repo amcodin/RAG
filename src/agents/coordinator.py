@@ -1,32 +1,36 @@
 from typing import Dict, Any, Optional
-import autogen
-from autogen.agentchat import Agent
-from ..config import GEMINI_CONFIG
+import time
+from google.cloud import aiplatform
+from autogen.agentchat.contrib.magentic_one import MagenticOneCoordinator
+from ..config import GEMINI_CONFIG, VERIFICATION_CONFIDENCE, COST_THRESHOLD
 
 class MagenticCoordinator:
-    """Primary coordinator using Magentic-one with Gemini model."""
+    """Coordinates price retrieval using Magentic framework with Gemini model."""
     
     def __init__(self):
-        # Initialize with Gemini model configuration
-        self.config = GEMINI_CONFIG
-        self.coordinator = self._create_coordinator()
-        
-    def _create_coordinator(self) -> Agent:
-        """Create the Magentic-one coordinator agent."""
-        return autogen.agentchat.ConversableAgent(
-            name="coordinator",
-            llm_config={
-                "config_list": [self.config],
-                "temperature": self.config["temperature"]
-            }
+        """Initialize coordinator with Gemini model."""
+        self.model = aiplatform.Model(
+            model_name=GEMINI_CONFIG["model"],
+            project=aiplatform.initializer.global_config.project,
+            location=aiplatform.initializer.global_config.location,
         )
-        
-    async def process_request(self, 
-                            url: str, 
-                            download_speed: float, 
-                            plan_name: Optional[str] = None) -> Dict[str, Any]:
+        self.coordinator = MagenticOneCoordinator(
+            model=self.model,
+            temperature=GEMINI_CONFIG["temperature"],
+            max_output_tokens=GEMINI_CONFIG["max_output_tokens"],
+            top_p=GEMINI_CONFIG["top_p"],
+            top_k=GEMINI_CONFIG["top_k"]
+        )
+        self.metrics = {
+            "requests_processed": 0,
+            "total_cost": 0.0,
+            "average_latency": 0.0,
+            "total_latency": 0.0
+        }
+    
+    async def process_request(self, url: str, download_speed: float, plan_name: Optional[str] = None) -> Dict[str, Any]:
         """
-        Process a price retrieval request using Magentic-one coordination.
+        Process a price retrieval request using Magentic framework.
         
         Args:
             url: Website URL to scrape
@@ -34,16 +38,78 @@ class MagenticCoordinator:
             plan_name: Optional specific plan name
             
         Returns:
-            Dict containing price information and confidence score
+            Dict containing price information and metadata
         """
-        # TODO: Implement Magentic-one request processing
-        raise NotImplementedError("Magentic-one coordination to be implemented")
+        start_time = time.time()
+        
+        try:
+            # Prepare the prompt for the model
+            prompt = self._build_prompt(url, download_speed, plan_name)
+            
+            # Get response from model
+            response = await self.coordinator.generate(prompt)
+            
+            # Parse and validate the response
+            result = self._parse_response(response)
+            
+            # Update metrics
+            elapsed_time = time.time() - start_time
+            self._update_metrics(elapsed_time)
+            
+            # Check confidence threshold
+            if result["confidence"] < VERIFICATION_CONFIDENCE:
+                raise ValueError("Confidence below threshold")
+                
+            # Check cost threshold
+            if self.metrics["total_cost"] > COST_THRESHOLD:
+                raise ValueError("Cost threshold exceeded")
+            
+            return result
+            
+        except Exception as e:
+            raise Exception(f"Coordinator processing failed: {str(e)}")
     
-    def monitor_performance(self) -> Dict[str, float]:
-        """Monitor coordinator performance and cost."""
-        # TODO: Implement performance monitoring
-        return {
-            "success_rate": 0.0,
-            "average_cost": 0.0,
-            "average_response_time": 0.0
-        }
+    def _build_prompt(self, url: str, download_speed: float, plan_name: Optional[str]) -> str:
+        """Build prompt for the model."""
+        prompt = (
+            f"Extract internet plan pricing information from {url}.\n"
+            f"Required download speed: {download_speed} Mbps\n"
+        )
+        if plan_name:
+            prompt += f"Specific plan name: {plan_name}\n"
+        
+        prompt += (
+            "\nFormat the response as JSON with:\n"
+            "- price: monthly cost in dollars\n"
+            "- confidence: confidence score between 0-1\n"
+            "- details: any additional plan information\n"
+        )
+        return prompt
+    
+    def _parse_response(self, response: str) -> Dict[str, Any]:
+        """Parse and validate model response."""
+        try:
+            result = {
+                "price": 0.0,
+                "confidence": 0.0,
+                "details": {}
+            }
+            # TODO: Implement actual response parsing
+            # For now returning placeholder
+            return result
+        except Exception as e:
+            raise ValueError(f"Failed to parse model response: {str(e)}")
+    
+    def _update_metrics(self, elapsed_time: float):
+        """Update performance metrics."""
+        self.metrics["requests_processed"] += 1
+        self.metrics["total_latency"] += elapsed_time
+        self.metrics["average_latency"] = (
+            self.metrics["total_latency"] / self.metrics["requests_processed"]
+        )
+        # TODO: Implement actual cost calculation
+        self.metrics["total_cost"] += 0.001  # Placeholder cost per request
+        
+    def monitor_performance(self) -> Dict[str, Any]:
+        """Get coordinator performance metrics."""
+        return self.metrics

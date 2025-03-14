@@ -1,6 +1,9 @@
 import pytest
 from src.main import PriceRetriever
 
+test_url = "https://www.aussiebroadband.com.au/internet/nbn-plans/"
+test_speed = 100.0
+
 @pytest.fixture
 async def price_retriever():
     return PriceRetriever()
@@ -24,8 +27,8 @@ async def test_system_status(price_retriever):
 async def test_basic_price_retrieval():
     """Test basic price retrieval with mock data."""
     retriever = PriceRetriever()
-    test_url = "https://example.com"
-    test_speed = 100.0
+    test_url = test_url
+    test_speed = test_speed
     
     # Note: This will raise NotImplementedError until actual implementation
     with pytest.raises(NotImplementedError):
@@ -35,8 +38,8 @@ async def test_basic_price_retrieval():
 async def test_fallback_system():
     """Test fallback system activation."""
     retriever = PriceRetriever()
-    test_url = "https://example.com"
-    test_speed = 100.0
+    test_url = test_url
+    test_speed = test_speed
     
     # Note: This will raise NotImplementedError until actual implementation
     with pytest.raises(NotImplementedError):

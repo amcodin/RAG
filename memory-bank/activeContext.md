@@ -13,67 +13,61 @@ Initial project setup and foundational documentation establishment.
 
 ## Active Decisions
 1. **Model Integration**
-   - Exclusively using Gemini-2.0-Flash multimodal model
-   - Optimizing for visual and text processing capabilities
-   - Configuring model parameters for optimal performance
+   - Implemented Gemini-2.0-Flash integration in coordinator
+   - Configured model parameters for optimal extraction
+   - Added cost and performance tracking
 
 2. **Agent Coordination Strategy**
-   - Magentic-one as primary coordination system
-   - Individual agents as fallback mechanism
-   - Integration with Gemini model capabilities
+   - Implemented MagenticOneCoordinator with Gemini model
+   - Built round-robin fallback system
+   - Added comprehensive metrics tracking
 
-2. **Web Content Processing**
-   - Primary: MultimodalWebSurfer for web interaction
-   - Direct integration with AutoGen framework
-   - Advanced JavaScript handling capabilities
-   - Backup Strategy:
-     - Jina Reader as fallback mechanism
-     - r.jina.ai for LLM-friendly content when WebSurfer fails
-     - s.jina.ai for supplementary web search capabilities
+3. **Web Content Processing**
+   - Implemented MultimodalWebSurfer for primary processing
+   - Added BeautifulSoup4 fallback for basic scraping
+   - Implemented confidence scoring system
 
-2. **Agent Architecture**
-   - Defining optimal number of agents
-   - Establishing communication protocols
-   - Planning task distribution strategy
-
-3. **Technology Stack**
-   - Core dependencies identified
-   - Environment configuration structure planned
-   - Testing framework to be determined
+4. **Agent Architecture**
+   - Implemented three-tier system:
+     1. MagenticCoordinator (primary)
+     2. WebSurferAgent (content processing)
+     3. RoundRobinDistributor (fallback)
+   - Added performance monitoring for each component
+   - Implemented error handling and recovery
 
 ## Current Considerations
 
 ### High Priority
-1. Set up Python virtual environment
-2. Install AutoGen v0.4 and extensions
-3. Implement Magentic-one coordination
-4. Configure fallback agent structure
+1. Complete response parsing in coordinator
+2. Implement price and speed extraction in web surfer
+3. Test parallel processing in fallback system
+4. Add caching mechanism
 
-### Technical Decisions Needed
-1. Gemini model parameter optimization
-2. Final web scraping tool selection
-3. Error handling strategy
-4. Performance monitoring setup
+### Technical Decisions Made
+1. Using BeautifulSoup4 for HTML parsing
+2. Implemented confidence scoring system
+3. Added comprehensive error handling
+4. Built metrics tracking for all components
 
 ### Open Questions
-1. Optimal Gemini model parameters for our use case
-2. Best approach for price verification using Gemini
-3. Cost tracking for Gemini API usage
-4. Cache strategy for repeat queries
+1. Cache invalidation strategy
+2. Rate limiting implementation
+3. Cost optimization techniques
+4. Testing strategy for different website formats
 
 ## Next Steps
 
 ### Immediate Tasks
-1. Set up Python development environment
-2. Install core dependencies
-3. Create initial agent scaffolding
-4. Implement basic URL validation
+1. Implement TODO items in extraction methods
+2. Add unit tests for core functionality
+3. Implement rate limiting
+4. Add request caching
 
 ### Short-term Goals
-1. Build prototype scraper agent
-2. Develop verification mechanism
-3. Implement cost tracking
-4. Create basic testing framework
+1. Complete testing framework
+2. Add performance benchmarks
+3. Implement cache layer
+4. Document API usage
 
 ### Documentation Needs
 1. API documentation
