@@ -22,10 +22,14 @@ Initial project setup and foundational documentation establishment.
    - Individual agents as fallback mechanism
    - Integration with Gemini model capabilities
 
-2. **Web Scraping Implementation**
-   - Implementing MultimodalWebSurfer for advanced web interaction
-   - JavaScript rendering handled through WebSurfer capabilities
-   - Integration with Magentic-one workflow
+2. **Web Content Processing**
+   - Primary: MultimodalWebSurfer for web interaction
+   - Direct integration with AutoGen framework
+   - Advanced JavaScript handling capabilities
+   - Backup Strategy:
+     - Jina Reader as fallback mechanism
+     - r.jina.ai for LLM-friendly content when WebSurfer fails
+     - s.jina.ai for supplementary web search capabilities
 
 2. **Agent Architecture**
    - Defining optimal number of agents

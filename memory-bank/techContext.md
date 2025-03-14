@@ -22,10 +22,16 @@
 - High-performance text analysis
 - Efficient response generation
 
-### 4. Web Scraping
-- BeautifulSoup4 or Selenium (TBD)
-- HTML parsing capabilities
-- JavaScript rendering support
+### 4. Web Content Processing
+- Primary: MultimodalWebSurfer
+  - Advanced web interaction capabilities
+  - Built-in JavaScript rendering support
+  - Direct integration with AutoGen
+
+- Backup: Jina Reader (https://github.com/jina-ai/reader)
+  - Read API: Converts URLs to LLM-friendly input (https://r.jina.ai/)
+  - Search API: Provides web search capabilities (https://s.jina.ai/)
+  - Fallback for complex websites or when WebSurfer fails
 
 ### 5. AgentEval Framework
 - Agent performance evaluation
