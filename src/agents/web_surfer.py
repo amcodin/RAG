@@ -1,16 +1,20 @@
 from typing import Dict, Any, Optional
 import time
-from autogen_ext.agents import MultimodalWebSurfer
+from autogen_ext.agents.web_surfer import MultimodalWebSurfer
+from autogen_ext.models.openai import OpenAIChatCompletionClient
 from bs4 import BeautifulSoup
 import requests
-from ..config import VERIFICATION_CONFIDENCE
+from ..config import VERIFICATION_CONFIDENCE, MODEL_NAME
 
 class WebSurferAgent:
     """Agent for web interaction and content processing using MultimodalWebSurfer."""
     
     def __init__(self):
         """Initialize web surfer agent."""
-        self.web_surfer = MultimodalWebSurfer()
+        self.web_surfer = MultimodalWebSurfer(
+            name="MultimodalWebSurfer",
+            model_client=OpenAIChatCompletionClient(model=MODEL_NAME),
+        )
         self.metrics = {
             "pages_processed": 0,
             "successful_extractions": 0,

@@ -1,7 +1,7 @@
 from typing import Dict, Any, Optional
 import time
 from google.cloud import aiplatform
-from autogen.agentchat.contrib.magentic_one import MagenticOneCoordinator
+from autogen_ext.agents.magentic_one import MagenticOneCoderAgent
 from ..config import GEMINI_CONFIG, VERIFICATION_CONFIDENCE, COST_THRESHOLD
 
 class MagenticCoordinator:
@@ -14,7 +14,7 @@ class MagenticCoordinator:
             project=aiplatform.initializer.global_config.project,
             location=aiplatform.initializer.global_config.location,
         )
-        self.coordinator = MagenticOneCoordinator(
+        self.coordinator = MagenticOneCoderAgent(
             model=self.model,
             temperature=GEMINI_CONFIG["temperature"],
             max_output_tokens=GEMINI_CONFIG["max_output_tokens"],

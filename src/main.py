@@ -1,7 +1,7 @@
 from typing import Dict, Any, Optional
-from agents.coordinator import MagenticCoordinator
-from agents.web_surfer import WebSurferAgent
-from agents.fallback import RoundRobinDistributor
+from .agents.coordinator import MagenticCoordinator
+from .agents.web_surfer import WebSurferAgent
+from .agents.fallback import RoundRobinDistributor
 
 class PriceRetriever:
     """Main entry point for internet plan price retrieval."""

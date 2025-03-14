@@ -15,6 +15,7 @@ GEMINI_CONFIG = {
 
 # Agent configuration
 MAX_AGENTS = int(os.getenv("MAX_AGENTS", 4))
+MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.0-flash")
 COST_THRESHOLD = float(os.getenv("COST_THRESHOLD", 5.0))
 VERIFICATION_CONFIDENCE = float(os.getenv("VERIFICATION_CONFIDENCE", 0.85))
 
