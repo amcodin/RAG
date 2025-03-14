@@ -30,9 +30,11 @@ async def test_basic_price_retrieval():
     test_url = test_url
     test_speed = test_speed
     
-    # Note: This will raise NotImplementedError until actual implementation
-    with pytest.raises(NotImplementedError):
-        await retriever.get_plan_price(test_url, test_speed)
+    price_info = await retriever.get_plan_price(test_url, test_speed)
+    assert isinstance(price_info, dict)
+    assert "price" in price_info
+    assert "confidence" in price_info
+    assert "details" in price_info
 
 @pytest.mark.asyncio
 async def test_fallback_system():
@@ -41,6 +43,12 @@ async def test_fallback_system():
     test_url = test_url
     test_speed = test_speed
     
-    # Note: This will raise NotImplementedError until actual implementation
-    with pytest.raises(NotImplementedError):
-        await retriever.get_plan_price(test_url, test_speed)
+    # Force fallback by simulating coordinator failure
+    retriever.coordinator.process_request = lambda *args, **kwargs: (_ for _ in ()).throw(Exception("Simulated coordinator failure"))
+    
+    price_info = await retriever.get_plan_price(test_url, test_speed)
+    assert isinstance(price_info, dict)
+    assert "price" in price_info
+    assert "confidence" in price_info
+    assert "source" in price_info
+    assert price_info["source"] == "fallback"

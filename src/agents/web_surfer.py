@@ -111,30 +111,118 @@ class WebSurferAgent:
         
     def _extract_price(self, container) -> Optional[float]:
         """Extract price from container."""
+        import re
+        
+        # Look for price elements first
+        price_elements = container.find_all(class_=lambda x: x and any(
+            term in x.lower() for term in ['price', 'cost', 'amount', 'fee']
+        ))
+        
+        # Combine with general container text
+        text_to_search = ' '.join([
+            elem.text for elem in price_elements
+        ] + [container.text])
+        
         price_patterns = [
-            r'\$\d+\.?\d*',  # $XX.XX
-            r'\d+\.?\d*\s*/\s*mo',  # XX.XX /mo
-            r'\d+\.?\d*\s*per\s*month'  # XX.XX per month
+            r'\$(\d+\.?\d*)',  # $XX.XX
+            r'(\d+\.?\d*)\s*/\s*mo',  # XX.XX /mo
+            r'(\d+\.?\d*)\s*per\s*month',  # XX.XX per month
+            r'(\d+\.?\d*)/month',  # XX.XX/month
+            r'(\d+\.?\d*)\s*monthly'  # XX.XX monthly
         ]
         
-        # TODO: Implement price extraction logic
+        for pattern in price_patterns:
+            match = re.search(pattern, text_to_search, re.IGNORECASE)
+            if match:
+                try:
+                    return float(match.group(1))
+                except (ValueError, IndexError):
+                    continue
+        
         return None
         
     def _extract_speed(self, container) -> Optional[float]:
         """Extract speed from container."""
+        import re
+        
+        # Look for speed elements first
+        speed_elements = container.find_all(class_=lambda x: x and any(
+            term in x.lower() for term in ['speed', 'bandwidth', 'download', 'mbps']
+        ))
+        
+        # Combine with general container text
+        text_to_search = ' '.join([
+            elem.text for elem in speed_elements
+        ] + [container.text])
+        
         speed_patterns = [
             r'(\d+\.?\d*)\s*mbps',
             r'(\d+\.?\d*)\s*mb/s',
-            r'(\d+\.?\d*)\s*mbit'
+            r'(\d+\.?\d*)\s*mbit',
+            r'(\d+\.?\d*)\s*megabits?(?:\s*per\s*second)?',
+            r'download(?:\s*speed)?\s*(?:of\s*)?(\d+\.?\d*)',
+            r'(\d+\.?\d*)\s*download'
         ]
         
-        # TODO: Implement speed extraction logic
+        for pattern in speed_patterns:
+            match = re.search(pattern, text_to_search, re.IGNORECASE)
+            if match:
+                try:
+                    return float(match.group(1))
+                except (ValueError, IndexError):
+                    continue
+        
         return None
         
     def _extract_details(self, container) -> Dict[str, Any]:
         """Extract additional plan details."""
         details = {}
-        # TODO: Implement details extraction logic
+        
+        # Common features to look for
+        feature_patterns = {
+            "contract_length": r'(?:(\d+)\s*(?:month|year)|no\s*contract)',
+            "setup_fee": r'setup\s*fee\s*\$?(\d+\.?\d*)',
+            "data_limit": r'(\d+)\s*(?:gb|tb)|unlimited',
+            "extras": r'includes?\s*(.*?)(?:\.|$)',
+        }
+        
+        # Look for feature elements
+        feature_elements = container.find_all(class_=lambda x: x and any(
+            term in x.lower() for term in ['feature', 'benefit', 'include']
+        ))
+        
+        text_to_search = ' '.join([
+            elem.text for elem in feature_elements
+        ] + [container.text])
+        
+        # Extract contract length
+        contract_match = re.search(feature_patterns["contract_length"], text_to_search, re.IGNORECASE)
+        if contract_match:
+            if "no contract" in contract_match.group(0).lower():
+                details["contract_length"] = "No contract"
+            else:
+                details["contract_length"] = f"{contract_match.group(1)} months"
+        
+        # Extract setup fee
+        setup_match = re.search(feature_patterns["setup_fee"], text_to_search, re.IGNORECASE)
+        if setup_match:
+            try:
+                details["setup_fee"] = float(setup_match.group(1))
+            except (ValueError, IndexError):
+                pass
+        
+        # Extract data limit
+        data_match = re.search(feature_patterns["data_limit"], text_to_search, re.IGNORECASE)
+        if data_match:
+            details["data_limit"] = "Unlimited" if "unlimited" in data_match.group(0).lower() else data_match.group(0)
+        
+        # Extract additional features
+        features = []
+        for feature in feature_elements:
+            features.append(feature.text.strip())
+        if features:
+            details["features"] = features
+            
         return details
         
     def _filter_plans(self, plans: list, download_speed: Optional[float], plan_name: Optional[str]) -> list:

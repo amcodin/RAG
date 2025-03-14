@@ -89,13 +89,26 @@ class MagenticCoordinator:
     def _parse_response(self, response: str) -> Dict[str, Any]:
         """Parse and validate model response."""
         try:
+            # Parse JSON response from model
+            import json
+            parsed = json.loads(response)
+            
+            # Validate required fields
+            if "price" not in parsed or not isinstance(parsed["price"], (int, float)):
+                raise ValueError("Invalid or missing price in response")
+            
+            if "confidence" not in parsed or not isinstance(parsed["confidence"], (int, float)):
+                parsed["confidence"] = 0.0
+                
+            if "details" not in parsed or not isinstance(parsed["details"], dict):
+                parsed["details"] = {}
+                
             result = {
-                "price": 0.0,
-                "confidence": 0.0,
-                "details": {}
+                "price": float(parsed["price"]),
+                "confidence": float(parsed["confidence"]),
+                "details": parsed["details"]
             }
-            # TODO: Implement actual response parsing
-            # For now returning placeholder
+            
             return result
         except Exception as e:
             raise ValueError(f"Failed to parse model response: {str(e)}")
